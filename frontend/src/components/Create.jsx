@@ -4,7 +4,7 @@ const Create = ({ onClose, visible }) => {
   if (!visible) return null;
   return (
     <div className="fixed inset-0  bg-black/20  backdrop-opacity-30 flex items-center justify-center">
-      <div className=" w-[40%] h-[80%] z-40  bg-white shadow-xl">
+      <div className=" w-[40%] h-[80%] z-40  bg-white shadow-xl rounded-md ">
         <div className="w-[100%] flex justify-center items-center">
           <div className="w-[60%] flex justify-center items-center mt-4">
             <form action="" className="w-[100%] space-y-5 ">
@@ -66,15 +66,15 @@ const Create = ({ onClose, visible }) => {
                   className="bg-gray-50 px-2 py-1 w-[100%] border-gray-300 border outline-none mt-2"
                 />
               </div>
-              <div className="flex">
+              <div className="flex space-x-2">
                 <button
                   onClick={onClose}
-                  className="p-2 bg-red-800 hover:bg-gray-200 hover:text-black transition-all duration-200 text-white m-2 shadow-sm px-3 py-1 rounded-sm"
+                  className="px-3 py-2 mt-3 rounded-sm bg-neutral-800 text-white hover:bg-neutral-200 hover:text-black transition-all duration-300"
                 >
                   Cancel
                 </button>
                 <button
-                  className="p-2 bg-emerald-600 hover:bg-gray-200 hover:text-black transition-all duration-200  px-3 py-1 rounded-sm text-white m-2 "
+                  className="px-3 py-2 mt-3 rounded-sm bg-neutral-800 text-white hover:bg-neutral-200 hover:text-black transition-all duration-300"
                   type="submit"
                 >
                   Add User

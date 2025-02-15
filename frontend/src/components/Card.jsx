@@ -14,7 +14,12 @@ const Card = () => {
   return (
     <div>
       <div>
-        <button onClick={showComponent}>Read Data</button>
+        <button
+          onClick={showComponent}
+          className="px-3 py-2 mt-3 rounded-sm bg-neutral-800 text-white hover:bg-neutral-200 hover:text-black transition-all duration-300 "
+        >
+          Read Data
+        </button>
         <OneCard visible={showModel} onClose={handleOnClose} />
       </div>
     </div>
