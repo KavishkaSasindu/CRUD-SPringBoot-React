@@ -2,7 +2,7 @@ import React from "react";
 import { useState } from "react";
 import OneCard from "./OneCard";
 
-const Card = () => {
+const Card = ({ id }) => {
   const [showModel, setShowModel] = useState(false);
   const showComponent = () => {
     setShowModel(true);
@@ -20,7 +20,7 @@ const Card = () => {
         >
           Read Data
         </button>
-        <OneCard visible={showModel} onClose={handleOnClose} />
+        <OneCard visible={showModel} onClose={handleOnClose} id={id} />
       </div>
     </div>
   );

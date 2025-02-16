@@ -1,7 +1,54 @@
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 
-const OneCard = ({ visible, onClose }) => {
+const OneCard = ({ visible, onClose, id }) => {
   if (!visible) return null;
+
+  console.log(id);
+
+  const [user, setUser] = useState({
+    profileId: "",
+    profileName: "",
+    profileEmail: "",
+    job: "",
+    birthday: "",
+    gender: "",
+  });
+
+  const [image, setImage] = useState(null);
+
+  const fetchData = async () => {
+    try {
+      const userResponse = await axios.get(
+        `http://localhost:8080/api/v1/user/${id}`,
+        { responseType: "json" }
+      );
+
+      const userData = await userResponse.data;
+
+      if (userResponse.status === 200) {
+        const imageResponse = await axios.get(
+          `http://localhost:8080/api/v1/user/image/${id}`,
+          { responseType: "blob" }
+        );
+
+        const imageData = URL.createObjectURL(imageResponse.data);
+
+        setImage(imageData);
+      }
+
+      console.log(userData);
+
+      setUser(userData);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   return (
     <div>
       <div className="fixed inset-0  bg-black/20  backdrop-opacity-30 flex items-center justify-center">
@@ -9,28 +56,29 @@ const OneCard = ({ visible, onClose }) => {
           <div className="w-full h-full flex justify-center items-center ">
             <div className=" flex flex-col justify-center items-center space-y-3">
               <img
-                src="https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg"
+                src={image}
                 alt="profile image"
-                className="w-[200px] h-[200px] object-cover border rounded-full shadow-lg flex justify-center items-center"
+                className="w-[200px] h-[200px] object-cover  rounded-full shadow-lg flex justify-center items-center"
               />
               <div>
                 <div className="w-[200px] h-auto space-y-5 flex flex-col justify-center items-start ">
                   <h1>
-                    <span className="font-medium">ID</span> : 28256
+                    <span className="font-medium">ID</span> : {user.profileId}
                   </h1>
                   <h1>
-                    <span className="font-medium">Name</span> : John Doe
-                    Kavishka Sasindu
+                    <span className="font-medium">Name</span> :{" "}
+                    {user.profileName}
                   </h1>
                   <h1>
-                    <span className="font-medium">Email</span> : user@gmail.com
+                    <span className="font-medium">Email</span> :{" "}
+                    {user.profileEmail}
                   </h1>
                   <h1>
-                    <span className="font-medium">Job</span> : DevOps Engineer
+                    <span className="font-medium">Job</span> : {user.job}
                   </h1>
                   <h1>
                     <span className="font-medium">Date of Birth</span> :
-                    2000-02-15
+                    {user.birthday}
                   </h1>
                 </div>
               </div>

@@ -1,9 +1,15 @@
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import Create from "../components/Create";
 import Card from "../components/Card";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const AllData = () => {
+  const navigate = useNavigate();
+
   const [showModel, setShowModel] = useState(false);
+  const [user, setUser] = useState([]);
   const showComponent = () => {
     setShowModel(true);
   };
@@ -11,6 +17,50 @@ const AllData = () => {
   const handleOnClose = () => {
     setShowModel(false);
   };
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8080/api/v1/user/getAll"
+      );
+
+      if (response.status === 200) {
+        const userList = await response.data;
+        console.log(userList);
+
+        const userWithImage = await Promise.all(
+          userList.map(async (user) => {
+            const imageResponse = await axios.get(
+              `http://localhost:8080/api/v1/user/image/${user.id}`,
+              { responseType: "blob" }
+            );
+
+            let imageData = null;
+
+            if (imageResponse.status === 200) {
+              imageData = URL.createObjectURL(imageResponse.data);
+              console.log(imageData);
+            }
+
+            return {
+              ...user,
+              imageData: imageData,
+            };
+          })
+        );
+        setUser(userWithImage);
+        toast.success("Data fetched successfully");
+        console.log(user);
+      }
+    } catch (error) {
+      console.log(error.message);
+      toast.error(error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <div>
@@ -68,37 +118,58 @@ const AllData = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        <tr className="border-b transition duration-300 ease-in-out hover:bg-gray-200">
-                          <td className="whitespace-nowrap px-6 py-4 font-medium">
-                            1
-                          </td>
-                          <td className="whitespace-nowrap px-6 py-4">Mark</td>
-                          <td className="whitespace-nowrap px-6 py-4">Otto</td>
-                          <td className="whitespace-nowrap px-6 py-4">@mdo</td>
-                          <td className="whitespace-nowrap px-6 py-4">@mdo</td>
-                          <td className="whitespace-nowrap px-6 py-4">@mdo</td>
-                          <td className="whitespace-nowrap px-6 py-4">@mdo</td>
-                          <td className="whitespace-nowrap px-6 py-4">
-                            <td className="flex space-x-2">
-                              <button>
-                                <Card />
-                              </button>
-                              <button
-                                onClick={showComponent}
-                                className="px-3 py-2 mt-3 rounded-sm bg-neutral-800 text-white hover:bg-neutral-200 hover:text-black transition-all duration-300"
-                              >
-                                <Create
-                                  visible={showModel}
-                                  onClose={handleOnClose}
-                                />{" "}
-                                Update
-                              </button>
-                              <button className="px-3 py-2 mt-3 rounded-sm bg-neutral-800 text-white hover:bg-neutral-200 hover:text-black transition-all duration-300">
-                                Delete
-                              </button>
+                        {user.map((user) => (
+                          <tr
+                            key={user.profileId}
+                            className="border-b transition duration-300 ease-in-out hover:bg-gray-200"
+                          >
+                            <td className="whitespace-nowrap px-6 py-4 font-medium">
+                              {user.profileId}
                             </td>
-                          </td>
-                        </tr>
+                            <td className="whitespace-nowrap px-6 py-4">
+                              {user.profileName}
+                            </td>
+                            <td className="whitespace-nowrap px-6 py-4">
+                              {user.profileEmail}
+                            </td>
+                            <td className="whitespace-nowrap px-6 py-4">
+                              {user.job}
+                            </td>
+                            <td className="whitespace-nowrap px-6 py-4">
+                              {user.birthday}
+                            </td>
+                            <td className="whitespace-nowrap px-6 py-4">
+                              {user.gender}
+                            </td>
+                            <td className="whitespace-nowrap px-6 py-4">
+                              <img
+                                src={user.imageData}
+                                alt="profile-image"
+                                className="w-[80px] h-[80px] object-cover rounded-full"
+                              />
+                            </td>
+                            <td className="whitespace-nowrap px-6 py-4">
+                              <td className="flex space-x-2">
+                                <button>
+                                  <Card id={user.id} />
+                                </button>
+                                <button
+                                  onClick={showComponent}
+                                  className="px-3 py-2 mt-3 rounded-sm bg-neutral-800 text-white hover:bg-neutral-200 hover:text-black transition-all duration-300"
+                                >
+                                  <Create
+                                    visible={showModel}
+                                    onClose={handleOnClose}
+                                  />{" "}
+                                  Update
+                                </button>
+                                <button className="px-3 py-2 mt-3 rounded-sm bg-neutral-800 text-white hover:bg-neutral-200 hover:text-black transition-all duration-300">
+                                  Delete
+                                </button>
+                              </td>
+                            </td>
+                          </tr>
+                        ))}
                       </tbody>
                     </table>
                   </div>
