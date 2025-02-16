@@ -4,14 +4,19 @@ import Card from "../components/Card";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import Update from "../components/Update";
+import { motion } from "motion/react";
 
 const AllData = () => {
-  const navigate = useNavigate();
-
   const [showModel, setShowModel] = useState(false);
+  const [showUpdateModel, setShowUpdateModel] = useState(false);
   const [user, setUser] = useState([]);
   const showComponent = () => {
     setShowModel(true);
+  };
+
+  const showUpdate = () => {
+    setShowUpdateModel(true);
   };
 
   const handleOnClose = () => {
@@ -55,6 +60,24 @@ const AllData = () => {
     } catch (error) {
       console.log(error.message);
       toast.error(error.message);
+    }
+  };
+
+  const deleteUser = async (id) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:8080/api/v1/user/delete/${id}`
+      );
+      if (response.status === 200) {
+        toast.success("Data deleted successfully");
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      } else {
+        toast.error("Data not deleted");
+      }
+    } catch (error) {
+      console.log(error.message);
     }
   };
 
@@ -117,9 +140,9 @@ const AllData = () => {
                           </th>
                         </tr>
                       </thead>
-                      <tbody>
+                      <motion.tbody>
                         {user.map((user) => (
-                          <tr
+                          <motion.tr
                             key={user.profileId}
                             className="border-b transition duration-300 ease-in-out hover:bg-gray-200"
                           >
@@ -153,24 +176,24 @@ const AllData = () => {
                                 <button>
                                   <Card id={user.id} />
                                 </button>
-                                <button
-                                  onClick={showComponent}
-                                  className="px-3 py-2 mt-3 rounded-sm bg-neutral-800 text-white hover:bg-neutral-200 hover:text-black transition-all duration-300"
-                                >
-                                  <Create
-                                    visible={showModel}
-                                    onClose={handleOnClose}
-                                  />{" "}
-                                  Update
+                                <button>
+                                  <Update id={user.id} />
                                 </button>
-                                <button className="px-3 py-2 mt-3 rounded-sm bg-neutral-800 text-white hover:bg-neutral-200 hover:text-black transition-all duration-300">
+                                <button
+                                  className="px-3 py-2 mt-3 rounded-sm bg-neutral-800 text-white hover:bg-neutral-200 hover:text-black transition-all duration-300"
+                                  onClick={() => {
+                                    confirm(
+                                      "Are you sure you want to delete this user?"
+                                    ) && deleteUser(user.id);
+                                  }}
+                                >
                                   Delete
                                 </button>
                               </td>
                             </td>
-                          </tr>
+                          </motion.tr>
                         ))}
-                      </tbody>
+                      </motion.tbody>
                     </table>
                   </div>
                 </div>
